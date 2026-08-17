@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global safety net: deny anything not explicitly white-listed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Students Profile Collection
+    match /students/{studentName} {
+      allow read, write: if true;
+    }
+
+    // 2. Submissions (Audio homework records)
+    match /submissions/{subId} {
+      allow read, write: if true;
+    }
+
+    // 3. HardWords (Bookmark and pronunciation failure logs)
+    match /hardWords/{wordId} {
+      allow read, write: if true;
+    }
+
+    // 4. Units (Speaking dialogue scripts created by teachers)
+    match /units/{unitId} {
+      allow read, write: if true;
+    }
+
+    // 5. MonthlyTests (Speaking monthly tests config)
+    match /monthlyTests/{testId} {
+      allow read, write: if true;
+    }
+
+    // 6. ReviewSessions (Student custom feedback/notes and review submissions)
+    match /reviewSessions/{sessionId} {
+      allow read, write: if true;
+    }
+
+    // 7. ShopRequests (Candy, snacks, and prizes exchange requests)
+    match /shopRequests/{requestId} {
+      allow read, write: if true;
+    }
+
+    // 8. TestResults (Student monthly testing grade cards)
+    match /testResults/{resultId} {
+      allow read, write: if true;
+    }
+
+    // 9. ShopItems (Options list in Star store)
+    match /shopItems/{itemId} {
+      allow read, write: if true;
+    }
+
+  }
+}

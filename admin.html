@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#4D96FF" />
+  <title>Point Junior Speaking - 선생님 대시보드 👩‍🏫</title>
+
+  <script>
+    // Safeguard to prevent "Converting circular structure to JSON" errors when serializing logs
+    (function() {
+      function safeSanitize(obj) {
+        if (!obj) return obj;
+        if (obj instanceof Error || (typeof obj === 'object' && (obj.message !== undefined || obj.stack !== undefined))) {
+          return obj.stack || `${obj.name || 'Error'}: ${obj.message}`;
+        }
+        if (typeof obj === 'function') {
+          return `[Function: ${obj.name || 'anonymous'}]`;
+        }
+        if (typeof window !== 'undefined' && (obj === window || obj === document)) {
+          return '[Browser Host Object]';
+        }
+        if (typeof HTMLElement !== 'undefined' && (obj instanceof HTMLElement || obj.nodeType !== undefined)) {
+          return `[HTMLElement: ${obj.tagName || 'Element'}]`;
+        }
+        if (typeof Event !== 'undefined' && (obj instanceof Event || (obj.type !== undefined && obj.target !== undefined))) {
+          return `[Event: ${obj.type}]`;
+        }
+        try {
+          const cache = new WeakSet();
+          const str = JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+              if (cache.has(value)) return '[Circular]';
+              cache.add(value);
+            }
+            if (typeof value === 'bigint') return value.toString();
+            return value;
+          });
+          return JSON.parse(str);
+        } catch (err) {
+          return String(obj);
+        }
+      }
+
+      ['log', 'warn', 'error', 'info'].forEach(method => {
+        const original = console[method];
+        if (original) {
+          console[method] = function(...args) {
+            const sanitizedArgs = args.map(arg => (arg && typeof arg === 'object' ? safeSanitize(arg) : arg));
+            original.apply(this, sanitizedArgs);
+          };
+        }
+      });
+
+      window.addEventListener('unhandledrejection', function(event) {
+        event.preventDefault();
+        const reason = event.reason;
+        console.warn("Unhandled Rejection: " + (reason ? (reason.message || String(reason)) : "Unknown"));
+      });
+
+      window.addEventListener('error', function(event) {
+        event.preventDefault();
+        console.warn("Uncaught Error: " + (event.error ? (event.error.message || String(event.error)) : event.message));
+      });
+    })();
+  </script>
+
+  <!-- Premium Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --brand-blue: #4D96FF;
+      --brand-mint: #6BCB77;
+      --brand-bg: #F8F9FC;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--brand-bg);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.02);
+      border-radius: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+  </style>
+
+  <!-- Firebase Web SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc, getDocs, query, where, orderBy, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYOJZNuB72oFPskOunQa0V98eaXFuyfiw",
+      authDomain: "point-junior-speaking.firebaseapp.com",
+      projectId: "point-junior-speaking",
+      storageBucket: "point-junior-speaking.firebasestorage.app",
+      messagingSenderId: "155258649103",
+      appId: "1:155258649103:web:3eb93c3a79c078acd7817a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    window._fb = { auth, storage, db, ref, uploadBytesResumable, getDownloadURL, collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc, getDocs, query, where, orderBy, limit, deleteDoc };
+
+    signInAnonymously(auth)
+      .then(() => {
+        console.log("Admin Firebase Auth Connected ✔️");
+        window._firebaseReady = true;
+        if (window.fetchAdminData) window.fetchAdminData();
+      })
+      .catch((err) => {
+        console.warn("Firebase Auth error:", err);
+        window._firebaseReady = true;
+        if (window.fetchAdminData) window.fetchAdminData();
+      });
+  </script>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 scale-90 opacity-0 pointer-events-none bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-xl shadow-slate-900/20 z-[999] flex items-center gap-2 transition-all duration-300">
+    <span id="toastText">알림 메시지</span>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200/80 sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 p-1.5 flex items-center justify-center shadow-xs shrink-0">
+        <img class="w-full h-full object-contain rounded-xl" src="/src/assets/images/logo.png" alt="Point Academy Logo" referrerPolicy="no-referrer" />
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-sm sm:text-base font-black text-slate-800 tracking-tight leading-none">
+            Point Junior Speaking
+          </h1>
+          <span class="bg-blue-50 text-blue-600 border border-blue-100 font-extrabold text-[10px] px-2 py-0.5 rounded-full">
+            선생님 관리용 👩‍🏫
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400 font-bold mt-0.5">학생 녹음본 제출 확인 및 평가 관리</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button onclick="fetchAdminData()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer" title="데이터 새로고침">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="refreshIcon"></i>
+        <span class="hidden sm:inline">새로고침</span>
+      </button>
+
+      <a href="/index.html" class="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm shadow-blue-200 transition-all cursor-pointer">
+        <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+        <span>학생 포털로 가기</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Primary Mode Switcher (2 Tabs Only) -->
+    <div class="bg-slate-200/70 p-1.5 rounded-2xl flex items-center gap-1.5 shadow-inner border border-slate-200">
+      <button id="tabBtnHw" onclick="switchAdminTab('homework')" class="flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 bg-white text-blue-600 shadow-sm cursor-pointer">
+        <i data-lucide="file-audio" class="w-4 h-4 text-blue-500"></i>
+        <span>📝 학생 숙제 녹음본 확인</span>
+      </button>
+      <button id="tabBtnMTest" onclick="switchAdminTab('monthly')" class="flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 cursor-pointer">
+        <i data-lucide="award" class="w-4 h-4 text-indigo-500"></i>
+        <span>📊 Monthly 테스트 녹음 확인 (1~20번)</span>
+      </button>
+    </div>
+
+    <!-- Filter & Control Bar -->
+    <div class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs space-y-4">
+      
+      <!-- Upper: Date/Month selector + Quick Stats -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        
+        <!-- Homework Date Selector -->
+        <div id="hwDateControl" class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-black text-slate-500 flex items-center gap-1">
+            <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
+            숙제 날짜:
+          </span>
+          <input id="adminHwDateInput" type="date" onchange="onAdminHwDateChanged()" class="border-2 border-slate-100 rounded-xl py-2 px-3 text-xs font-black text-slate-700 bg-slate-50 focus:outline-none focus:border-blue-400 cursor-pointer" />
+          <button onclick="setAdminHwToday()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-black px-3 py-2 rounded-xl transition-all cursor-pointer">
+            오늘
+          </button>
+        </div>
+
+        <!-- Monthly Test Month Selector -->
+        <div id="mTestMonthControl" class="hidden flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-black text-slate-500 flex items-center gap-1">
+            <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-500"></i>
+            시험 월:
+          </span>
+          <input id="adminMTestMonthInput" type="month" onchange="onAdminMTestMonthChanged()" class="border-2 border-slate-100 rounded-xl py-2 px-3 text-xs font-black text-slate-700 bg-slate-50 focus:outline-none focus:border-indigo-400 cursor-pointer" />
+          <button onclick="setAdminMTestCurrentMonth()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-black px-3 py-2 rounded-xl transition-all cursor-pointer">
+            이번 달
+          </button>
+        </div>
+
+        <!-- Submission Summary Counters -->
+        <div class="flex items-center gap-2">
+          <span id="statSubmittedBadge" class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            제출 완료: <span id="txtSubmittedCount" class="font-extrabold">0명</span>
+          </span>
+          <span id="statUnsubmittedBadge" class="bg-rose-50 text-rose-600 border border-rose-200 text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            미제출: <span id="txtUnsubmittedCount" class="font-extrabold">0명</span>
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Lower: Class Filters & Search -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
+        <!-- Class filter chips -->
+        <div class="flex items-center gap-1.5 flex-wrap" id="classFilterChips">
+          <button onclick="setClassFilter('all')" data-class="all" class="cls-chip bg-blue-500 text-white text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer shadow-xs transition-all">
+            전체 분반
+          </button>
+          <button onclick="setClassFilter('E.S.1반')" data-class="E.S.1반" class="cls-chip bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer transition-all">
+            E.S.1반
+          </button>
+          <button onclick="setClassFilter('E.S.2반')" data-class="E.S.2반" class="cls-chip bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer transition-all">
+            E.S.2반
+          </button>
+          <button onclick="setClassFilter('E.S.3반')" data-class="E.S.3반" class="cls-chip bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer transition-all">
+            E.S.3반
+          </button>
+          <button onclick="setClassFilter('P-E.S반')" data-class="P-E.S반" class="cls-chip bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer transition-all">
+            P-E.S반
+          </button>
+        </div>
+
+        <!-- Search + Unsubmitted only toggle -->
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1 sm:w-48">
+            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input id="inpSearchStudent" type="text" placeholder="학생 이름 검색..." oninput="renderAdminList()" class="w-full border border-slate-200 rounded-xl py-1.5 pl-8 pr-3 text-xs font-black text-slate-700 bg-slate-50/50 focus:outline-none focus:border-blue-400" />
+          </div>
+
+          <button id="btnToggleUnsubmittedOnly" onclick="toggleUnsubmittedFilter()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3 py-2 rounded-xl transition-all flex items-center gap-1 cursor-pointer shrink-0">
+            <span id="unsubmittedIcon">❌</span>
+            <span id="unsubmittedText">미제출자만 보기</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Student Cards Container -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between px-1">
+        <h3 id="listTitle" class="text-xs sm:text-sm font-black text-slate-700 flex items-center gap-2">
+          <span>학생 명단 및 녹음 확인</span>
+        </h3>
+        <span id="totalStudentsCount" class="text-xs font-bold text-slate-400">총 0명</span>
+      </div>
+
+      <!-- Main Student Card List -->
+      <div id="studentCardsContainer" class="space-y-3.5">
+        <!-- Rendered via JavaScript -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-12 text-center text-slate-400 space-y-2">
+          <div class="w-8 h-8 mx-auto rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
+          <p class="text-xs font-bold">학생 녹음 데이터를 불러오는 중입니다...</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto py-6 border-t border-slate-200/60 bg-white text-center text-xs font-bold text-slate-400">
+    Point Junior Speaking Academy • Teacher Management Portal
+  </footer>
+
+  <!-- ==================== APPLICATION SCRIPTS ==================== -->
+  <script>
+    // ── Built-in Student Roster ──
+    const DEFAULT_STUDENTS = [
+      { name: "김태연", cls: "E.S.1반" },
+      { name: "박주성", cls: "E.S.1반" },
+      { name: "정진호", cls: "E.S.1반" },
+      { name: "한바로", cls: "E.S.1반" },
+      { name: "안서윤", cls: "E.S.1반" },
+      { name: "강민서", cls: "E.S.1반" },
+      { name: "김지안", cls: "E.S.2반" },
+      { name: "백지선", cls: "E.S.2반" },
+      { name: "김승아", cls: "E.S.2반" },
+      { name: "정선우", cls: "E.S.3반" },
+      { name: "강준서", cls: "P-E.S반" }
+    ];
+
+    // ── Application State ──
+    let activeAdminTab = 'homework'; // 'homework' | 'monthly'
+    let selectedAdminDate = getTodayFormatted();
+    let selectedAdminMonth = getCurrentMonthFormatted();
+    let activeClassFilter = 'all';
+    let filterUnsubmittedOnly = false;
+    let rawSubmissions = [];
+    let expandedCards = new Set();
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      const text = document.getElementById('toastText');
+      if (!t || !text) return;
+      text.textContent = msg;
+      t.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+      t.classList.add('opacity-100', 'scale-100');
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => {
+        t.classList.remove('opacity-100', 'scale-100');
+        t.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+      }, 3000);
+    }
+
+    function getTodayFormatted() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function getCurrentMonthFormatted() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    }
+
+    // Initialize UI on load
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('adminHwDateInput').value = selectedAdminDate;
+      document.getElementById('adminMTestMonthInput').value = selectedAdminMonth;
+      lucide.createIcons();
+    });
+
+    // ----------------------------------------------------
+    // TAB SWITCHING
+    // ----------------------------------------------------
+    function switchAdminTab(tab) {
+      activeAdminTab = tab;
+      const btnHw = document.getElementById('tabBtnHw');
+      const btnMTest = document.getElementById('tabBtnMTest');
+      const hwCtrl = document.getElementById('hwDateControl');
+      const mTestCtrl = document.getElementById('mTestMonthControl');
+
+      if (tab === 'homework') {
+        btnHw.className = "flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 bg-white text-blue-600 shadow-sm cursor-pointer";
+        btnMTest.className = "flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 cursor-pointer";
+        hwCtrl.classList.remove('hidden');
+        mTestCtrl.classList.add('hidden');
+      } else {
+        btnMTest.className = "flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 bg-white text-indigo-600 shadow-sm cursor-pointer";
+        btnHw.className = "flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 cursor-pointer";
+        mTestCtrl.classList.remove('hidden');
+        hwCtrl.classList.add('hidden');
+      }
+
+      renderAdminList();
+      lucide.createIcons();
+    }
+
+    function setAdminHwToday() {
+      selectedAdminDate = getTodayFormatted();
+      document.getElementById('adminHwDateInput').value = selectedAdminDate;
+      renderAdminList();
+    }
+
+    function onAdminHwDateChanged() {
+      const val = document.getElementById('adminHwDateInput').value;
+      if (val) {
+        selectedAdminDate = val;
+        renderAdminList();
+      }
+    }
+
+    function setAdminMTestCurrentMonth() {
+      selectedAdminMonth = getCurrentMonthFormatted();
+      document.getElementById('adminMTestMonthInput').value = selectedAdminMonth;
+      renderAdminList();
+    }
+
+    function onAdminMTestMonthChanged() {
+      const val = document.getElementById('adminMTestMonthInput').value;
+      if (val) {
+        selectedAdminMonth = val;
+        renderAdminList();
+      }
+    }
+
+    function setClassFilter(cls) {
+      activeClassFilter = cls;
+      document.querySelectorAll('.cls-chip').forEach(btn => {
+        if (btn.getAttribute('data-class') === cls) {
+          btn.className = "cls-chip bg-blue-500 text-white text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer shadow-xs transition-all";
+        } else {
+          btn.className = "cls-chip bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer transition-all";
+        }
+      });
+      renderAdminList();
+    }
+
+    function toggleUnsubmittedFilter() {
+      filterUnsubmittedOnly = !filterUnsubmittedOnly;
+      const btn = document.getElementById('btnToggleUnsubmittedOnly');
+      const text = document.getElementById('unsubmittedText');
+      if (filterUnsubmittedOnly) {
+        btn.className = "bg-rose-500 text-white text-xs font-black px-3 py-2 rounded-xl transition-all flex items-center gap-1 cursor-pointer shrink-0 shadow-xs";
+        text.textContent = "미제출자 필터 적용중";
+      } else {
+        btn.className = "bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3 py-2 rounded-xl transition-all flex items-center gap-1 cursor-pointer shrink-0";
+        text.textContent = "미제출자만 보기";
+      }
+      renderAdminList();
+    }
+
+    function toggleCard(cardId) {
+      if (expandedCards.has(cardId)) {
+        expandedCards.delete(cardId);
+      } else {
+        expandedCards.add(cardId);
+      }
+      renderAdminList();
+    }
+
+    // ----------------------------------------------------
+    // DATA FETCHING FROM FIRESTORE
+    // ----------------------------------------------------
+    async function fetchAdminData() {
+      const icon = document.getElementById('refreshIcon');
+      if (icon) icon.classList.add('animate-spin');
+
+      const fb = window._fb;
+      if (!fb) {
+        toast('데이터베이스 초기화 대기 중...');
+        return;
+      }
+
+      try {
+        const snap = await fb.getDocs(fb.collection(fb.db, 'submissions'));
+        rawSubmissions = [];
+        snap.forEach(doc => {
+          rawSubmissions.push({ id: doc.id, ...doc.data() });
+        });
+
+        toast(`데이터 동기화 완료 (총 ${rawSubmissions.length}개 기록)`);
+        renderAdminList();
+      } catch (err) {
+        console.error("fetchAdminData error:", err);
+        toast('데이터 로딩 중 오류가 발생했습니다.');
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
+      }
+    }
+    window.fetchAdminData = fetchAdminData;
+
+    // ----------------------------------------------------
+    // RENDER LIST BASED ON CURRENT TAB
+    // ----------------------------------------------------
+    function renderAdminList() {
+      const container = document.getElementById('studentCardsContainer');
+      const listTitle = document.getElementById('listTitle');
+      const totalCountEl = document.getElementById('totalStudentsCount');
+      const searchKeyword = (document.getElementById('inpSearchStudent').value || '').trim().toLowerCase();
+
+      // Filter student list by class and search
+      let students = DEFAULT_STUDENTS.filter(s => {
+        if (activeClassFilter !== 'all' && s.cls !== activeClassFilter) return false;
+        if (searchKeyword && !s.name.toLowerCase().includes(searchKeyword)) return false;
+        return true;
+      });
+
+      if (activeAdminTab === 'homework') {
+        renderHomeworkTab(students, container, listTitle, totalCountEl);
+      } else {
+        renderMonthlyTestTab(students, container, listTitle, totalCountEl);
+      }
+
+      lucide.createIcons();
+    }
+
+    // ----------------------------------------------------
+    // 1. HOMEWORK RECORDINGS TAB
+    // ----------------------------------------------------
+    function renderHomeworkTab(students, container, listTitle, totalCountEl) {
+      listTitle.innerHTML = `<span>📅 [${selectedAdminDate}] 숙제 녹음 제출 현황</span>`;
+
+      let submittedCount = 0;
+      let unsubmittedCount = 0;
+      const cardsHtml = [];
+
+      students.forEach(student => {
+        // Find homework submissions for this student on the selected date
+        const matches = rawSubmissions.filter(sub => {
+          if (sub.studentName !== student.name) return false;
+          // Must match date or be a homework type with this date
+          const dateMatch = sub.date === selectedAdminDate || (sub.unitName && sub.unitName.includes(selectedAdminDate));
+          const isHwType = sub.type === 'homework' || (!sub.type && !sub.questionNum);
+          return dateMatch && isHwType;
+        });
+
+        const isSubmitted = matches.length > 0;
+        if (isSubmitted) submittedCount++;
+        else unsubmittedCount++;
+
+        if (filterUnsubmittedOnly && isSubmitted) return;
+
+        const cardId = `hw_${student.name}_${selectedAdminDate}`;
+        const isExpanded = expandedCards.has(cardId) || isSubmitted; // Expand by default if submitted
+
+        let badgeHtml = "";
+        let borderClass = "";
+
+        if (isSubmitted) {
+          badgeHtml = `
+            <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              ✅ 제출 완료 (${matches.length}건)
+            </span>
+          `;
+          borderClass = "bg-white border border-slate-200 hover:border-emerald-300";
+        } else {
+          badgeHtml = `
+            <span class="bg-rose-50 text-rose-600 border border-rose-200 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              🚨 빨간 ❌ 미제출
+            </span>
+          `;
+          borderClass = "bg-rose-50/20 border-2 border-rose-200 hover:border-rose-300";
+        }
+
+        // Submissions audio list
+        let recordingsHtml = "";
+        if (isSubmitted) {
+          recordingsHtml = matches.map((sub, idx) => {
+            const timeStr = sub.submittedAt && sub.submittedAt.seconds ? new Date(sub.submittedAt.seconds * 1000).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '제출완료';
+            return `
+              <div class="bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl space-y-2 text-left">
+                <div class="flex items-center justify-between text-xs font-black">
+                  <span class="text-slate-800 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    녹음본 #${idx + 1} (${sub.fileName || '숙제음성'})
+                  </span>
+                  <span class="text-[11px] text-slate-400 font-bold">${timeStr}</span>
+                </div>
+                <audio controls src="${sub.fileUrl}" class="w-full rounded-lg" style="height: 36px;"></audio>
+                <div class="flex justify-end gap-2 pt-1">
+                  <a href="${sub.fileUrl}" target="_blank" download="${sub.fileName || 'homework.webm'}" class="text-[11px] text-blue-600 hover:underline flex items-center gap-1 font-bold">
+                    <i data-lucide="download" class="w-3 h-3"></i> 다운로드
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          recordingsHtml = `
+            <div class="py-4 text-center text-slate-400 bg-slate-50/60 border border-dashed border-slate-200 rounded-2xl space-y-1">
+              <p class="text-xs font-bold text-rose-500">❌ 아직 제출된 숙제 녹음이 없습니다.</p>
+              <p class="text-[11px] text-slate-400">학생이 숙제를 제출하면 여기에 오디오가 자동으로 표시됩니다.</p>
+            </div>
+          `;
+        }
+
+        cardsHtml.push(`
+          <div class="${borderClass} rounded-3xl p-4 sm:p-5 transition-all shadow-xs space-y-3">
+            <div class="flex items-center justify-between cursor-pointer" onclick="toggleCard('${cardId}')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl ${isSubmitted ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-700'} flex items-center justify-center font-black text-sm shrink-0">
+                  ${student.name[0]}
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm sm:text-base font-black text-slate-800">${student.name}</span>
+                    <span class="text-[10px] font-black text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">${student.cls}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 font-bold mt-0.5">
+                    ${isSubmitted ? `녹음 ${matches.length}개 등록됨` : '숙제 미제출 상태'}
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                ${badgeHtml}
+                <span class="text-slate-400 text-xs font-bold">${isExpanded ? '▲' : '▼'}</span>
+              </div>
+            </div>
+
+            <!-- Expandable recordings section -->
+            <div class="${isExpanded ? '' : 'hidden'} pt-3 border-t border-slate-100 space-y-2">
+              ${recordingsHtml}
+            </div>
+          </div>
+        `);
+      });
+
+      // Update counters
+      document.getElementById('txtSubmittedCount').textContent = `${submittedCount}명`;
+      document.getElementById('txtUnsubmittedCount').textContent = `${unsubmittedCount}명`;
+      totalCountEl.textContent = `총 ${students.length}명 중 ${submittedCount}명 제출 완료 (${Math.round((submittedCount / (students.length || 1)) * 100)}%)`;
+
+      container.innerHTML = cardsHtml.length > 0 ? cardsHtml.join('') : `
+        <div class="bg-white border border-slate-200 rounded-3xl p-10 text-center text-slate-400">
+          <p class="text-xs font-bold">해당 조건에 일치하는 학생이 없습니다.</p>
+        </div>
+      `;
+    }
+
+    // ----------------------------------------------------
+    // 2. MONTHLY TEST RECORDINGS TAB (1~20)
+    // ----------------------------------------------------
+    function renderMonthlyTestTab(students, container, listTitle, totalCountEl) {
+      listTitle.innerHTML = `<span>📊 [${selectedAdminMonth}] Monthly Test 1번~20번 문항 녹음 현황</span>`;
+
+      let fullCompletedCount = 0;
+      let unsubmittedCount = 0;
+      const cardsHtml = [];
+
+      students.forEach(student => {
+        // Find monthly test submissions for this student in selected month
+        const matches = rawSubmissions.filter(sub => {
+          if (sub.studentName !== student.name) return false;
+          if (sub.type !== 'monthly_test' && !sub.questionNum) return false;
+          // Match month
+          return sub.month === selectedAdminMonth || sub.testMonth === selectedAdminMonth || (sub.unitName && sub.unitName.includes(selectedAdminMonth));
+        });
+
+        const answeredCount = matches.length;
+        const isFullDone = answeredCount === 20;
+        const isNotStarted = answeredCount === 0;
+
+        if (isFullDone) fullCompletedCount++;
+        if (isNotStarted) unsubmittedCount++;
+
+        if (filterUnsubmittedOnly && isFullDone) return;
+
+        const cardId = `mtest_${student.name}_${selectedAdminMonth}`;
+        const isExpanded = expandedCards.has(cardId);
+
+        let badgeHtml = "";
+        let borderClass = "";
+
+        if (isNotStarted) {
+          badgeHtml = `
+            <span class="bg-rose-50 text-rose-600 border border-rose-200 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              🚨 빨간 ❌ 미응시 (0/20)
+            </span>
+          `;
+          borderClass = "bg-rose-50/20 border-2 border-rose-200 hover:border-rose-300";
+        } else if (isFullDone) {
+          badgeHtml = `
+            <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              🎓 20/20 전체 완료
+            </span>
+          `;
+          borderClass = "bg-white border border-slate-200 hover:border-indigo-300";
+        } else {
+          badgeHtml = `
+            <span class="bg-amber-50 text-amber-700 border border-amber-200 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              ⚠️ ${answeredCount}/20 진행 중
+            </span>
+          `;
+          borderClass = "bg-white border-2 border-amber-200 hover:border-amber-300";
+        }
+
+        // Generate 1 to 20 grid summary chips
+        let chipsHtml = "";
+        for (let q = 1; q <= 20; q++) {
+          const sub = matches.find(m => m.questionNum === q);
+          if (sub) {
+            chipsHtml += `
+              <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 font-black text-[10px] flex items-center justify-center shadow-xs" title="문제 ${q}번: 제출 완료">
+                ${q}
+              </span>
+            `;
+          } else {
+            chipsHtml += `
+              <span class="w-6 h-6 rounded-lg bg-rose-100 text-rose-600 font-black text-[10px] flex items-center justify-center" title="문제 ${q}번: ❌ 미제출">
+                ❌
+              </span>
+            `;
+          }
+        }
+
+        // Detailed question audios when expanded
+        let detailsHtml = "";
+        if (isExpanded) {
+          let questionsGrid = "";
+          for (let q = 1; q <= 20; q++) {
+            const sub = matches.find(m => m.questionNum === q);
+            questionsGrid += `
+              <div class="bg-slate-50 border ${sub ? 'border-indigo-100' : 'border-slate-200'} p-3 rounded-2xl space-y-1.5 text-xs text-left">
+                <div class="flex items-center justify-between">
+                  <span class="font-black ${sub ? 'text-indigo-600' : 'text-slate-400'} flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full ${sub ? 'bg-emerald-500' : 'bg-rose-400'}"></span>
+                    문제 ${q}번
+                  </span>
+                  <span class="text-[10px] font-black ${sub ? 'text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded' : 'text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded'}">
+                    ${sub ? '✅ 제출 완료' : '❌ 미제출'}
+                  </span>
+                </div>
+                ${sub && sub.fileUrl ? `
+                  <audio controls src="${sub.fileUrl}" class="w-full rounded-lg" style="height: 32px;"></audio>
+                ` : `
+                  <p class="text-[11px] text-slate-300 italic py-1">녹음 파일 없음</p>
+                `}
+              </div>
+            `;
+          }
+
+          detailsHtml = `
+            <div class="pt-3 border-t border-slate-100 space-y-3">
+              <h4 class="text-[11px] font-black uppercase tracking-wider text-slate-400 text-left">
+                1번 ~ 20번 문항별 개별 녹음 듣기
+              </h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+                ${questionsGrid}
+              </div>
+            </div>
+          `;
+        }
+
+        cardsHtml.push(`
+          <div class="${borderClass} rounded-3xl p-4 sm:p-5 transition-all shadow-xs space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer" onclick="toggleCard('${cardId}')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl ${isFullDone ? 'bg-indigo-100 text-indigo-800' : isNotStarted ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800'} flex items-center justify-center font-black text-sm shrink-0">
+                  ${student.name[0]}
+                </div>
+                <div class="text-left">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm sm:text-base font-black text-slate-800">${student.name}</span>
+                    <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">${student.cls}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 font-bold mt-0.5">
+                    Monthly Test 제출율: ${answeredCount} / 20 완료 (${Math.round((answeredCount / 20) * 100)}%)
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between sm:justify-end gap-3">
+                ${badgeHtml}
+                <span class="text-slate-400 text-xs font-bold">${isExpanded ? '▲ 접기' : '▼ 문항별 듣기'}</span>
+              </div>
+            </div>
+
+            <!-- Mini 1~20 Status Bar -->
+            <div class="flex items-center gap-1 flex-wrap pt-2 border-t border-slate-100/60">
+              <span class="text-[10px] font-black text-slate-400 mr-1.5">문항 현황:</span>
+              ${chipsHtml}
+            </div>
+
+            <!-- Detailed 20 questions audio players -->
+            ${detailsHtml}
+          </div>
+        `);
+      });
+
+      // Update counters
+      document.getElementById('txtSubmittedCount').textContent = `${fullCompletedCount}명`;
+      document.getElementById('txtUnsubmittedCount').textContent = `${unsubmittedCount}명`;
+      totalCountEl.textContent = `총 ${students.length}명 중 ${fullCompletedCount}명 완수 (${Math.round((fullCompletedCount / (students.length || 1)) * 100)}%)`;
+
+      container.innerHTML = cardsHtml.length > 0 ? cardsHtml.join('') : `
+        <div class="bg-white border border-slate-200 rounded-3xl p-10 text-center text-slate-400">
+          <p class="text-xs font-bold">해당 조건에 일치하는 학생이 없습니다.</p>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

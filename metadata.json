@@ -1,0 +1,6 @@
+{
+  "name": "Point Junior Speaking",
+  "description": "감성적이고 직관적인 주니어 영어 스피킹 훈련 서비스",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,242 @@
+{
+  "entities": {
+    "Submission": {
+      "title": "Submission",
+      "description": "Student homework submission with audio file recording details",
+      "type": "object",
+      "properties": {
+        "studentName": {
+          "type": "string",
+          "description": "Name of the student"
+        },
+        "unitId": {
+          "type": "integer",
+          "description": "ID of the unit being submitted"
+        },
+        "unitName": {
+          "type": "string",
+          "description": "Name of the unit"
+        },
+        "dialogueNum": {
+          "type": "integer",
+          "description": "The number of the dialogue card within this unit"
+        },
+        "fileName": {
+          "type": "string",
+          "description": "File name in storage"
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "Direct download URL of the recorded audio"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of submission"
+        }
+      },
+      "required": [
+        "studentName",
+        "unitId",
+        "unitName",
+        "dialogueNum",
+        "fileName",
+        "fileUrl",
+        "submittedAt"
+      ]
+    },
+    "HardWord": {
+      "title": "HardWord",
+      "description": "Student voice recognition trial and error log for dialog cards",
+      "type": "object",
+      "properties": {
+        "studentName": {
+          "type": "string"
+        },
+        "unitId": {
+          "type": "integer"
+        },
+        "unitName": {
+          "type": "string"
+        },
+        "dialogueNum": {
+          "type": "integer"
+        },
+        "hardRecords": {
+          "type": "array",
+          "description": "Array of sentences that were failed 5 times with mispronounced words list"
+        },
+        "passLog": {
+          "type": "array",
+          "description": "Complete try history and pass outcome details"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "studentName",
+        "unitId",
+        "unitName",
+        "dialogueNum",
+        "hardRecords",
+        "passLog",
+        "submittedAt"
+      ]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Student level and star profiles stored under students/{studentName}",
+      "type": "object",
+      "properties": {
+        "star": {
+          "type": "integer",
+          "description": "Current number of stars accumulated by the student"
+        },
+        "level": {
+          "type": "integer",
+          "description": "Current level calculated from stars (Lv.1 to Lv.5)"
+        },
+        "streak": {
+          "type": "integer",
+          "description": "Consecutive days homework completion streak counter"
+        },
+        "lastCompletedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The last time the student fully completed a homework unit"
+        },
+        "totalCompleted": {
+          "type": "integer",
+          "description": "Total completed homework unit milestones"
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The last time the student logged in to calculate active streak"
+        }
+      },
+      "required": [
+        "star",
+        "level",
+        "streak"
+      ]
+    },
+    "ShopItem": {
+      "title": "ShopItem",
+      "description": "Individual gift item or snack in Star Shop",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Item name"
+        },
+        "logo": {
+          "type": "string",
+          "description": "Emoji logo or badge"
+        },
+        "cost": {
+          "type": "integer",
+          "description": "Star cost of the exchange"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "name",
+        "logo",
+        "cost"
+      ]
+    },
+    "ShopRequest": {
+      "title": "ShopRequest",
+      "description": "Student star shop exchange request details",
+      "type": "object",
+      "properties": {
+        "studentName": {
+          "type": "string"
+        },
+        "itemName": {
+          "type": "string"
+        },
+        "starCost": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "requestedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "studentName",
+        "itemName",
+        "starCost",
+        "status",
+        "requestedAt"
+      ]
+    },
+    "ReviewSession": {
+      "title": "ReviewSession",
+      "description": "History logs of fully cleared error vocabulary reviews",
+      "type": "object",
+      "properties": {
+        "studentName": {
+          "type": "string"
+        },
+        "sentencesCount": {
+          "type": "integer"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "bonusStar": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "studentName",
+        "sentencesCount",
+        "completedAt",
+        "bonusStar"
+      ]
+    }
+  },
+  "firestore": {
+    "submissions/{subId}": {
+      "schema": "Submission",
+      "description": "Contains audio Homework file submissions and storage paths"
+    },
+    "hardWords/{wordId}": {
+      "schema": "HardWord",
+      "description": "Maintains mispronounced words and attempts for homework dialogs"
+    },
+    "students/{studentName}": {
+      "schema": "Student",
+      "description": "Stores user levels, streak values, login dates and star assets"
+    },
+    "shopItems/{itemId}": {
+      "schema": "ShopItem",
+      "description": "Stores options available in Star store configured by the teacher"
+    },
+    "shopRequests/{requestId}": {
+      "schema": "ShopRequest",
+      "description": "Stores exchange requests of physical/digital items submitted by students"
+    },
+    "reviewSessions/{sessionId}": {
+      "schema": "ReviewSession",
+      "description": "Stores reviews logged for audit on cleared pronunciation errors"
+    }
+  }
+}

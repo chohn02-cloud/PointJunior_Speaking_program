@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#4D96FF" />
+  <title>Point Junior Speaking ⭐</title>
+  
+  <script>
+    // Safeguard to prevent "Converting circular structure to JSON" errors when serializing logs
+    (function() {
+      function safeSanitize(obj) {
+        if (!obj) return obj;
+        if (obj instanceof Error || (typeof obj === 'object' && (obj.message !== undefined || obj.stack !== undefined))) {
+          return obj.stack || `${obj.name || 'Error'}: ${obj.message}`;
+        }
+        if (typeof obj === 'function') {
+          return `[Function: ${obj.name || 'anonymous'}]`;
+        }
+        if (typeof window !== 'undefined' && (obj === window || obj === document)) {
+          return '[Browser Host Object]';
+        }
+        if (typeof HTMLElement !== 'undefined' && (obj instanceof HTMLElement || obj.nodeType !== undefined)) {
+          return `[HTMLElement: ${obj.tagName || 'Element'}]`;
+        }
+        if (typeof Event !== 'undefined' && (obj instanceof Event || (obj.type !== undefined && obj.target !== undefined))) {
+          return `[Event: ${obj.type}]`;
+        }
+        try {
+          const cache = new WeakSet();
+          const str = JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+              if (cache.has(value)) return '[Circular]';
+              cache.add(value);
+            }
+            if (typeof value === 'bigint') return value.toString();
+            return value;
+          });
+          return JSON.parse(str);
+        } catch (err) {
+          return String(obj);
+        }
+      }
+
+      ['log', 'warn', 'error', 'info'].forEach(method => {
+        const original = console[method];
+        if (original) {
+          console[method] = function(...args) {
+            const sanitizedArgs = args.map(arg => (arg && typeof arg === 'object' ? safeSanitize(arg) : arg));
+            original.apply(this, sanitizedArgs);
+          };
+        }
+      });
+
+      window.addEventListener('unhandledrejection', function(event) {
+        event.preventDefault();
+        const reason = event.reason;
+        console.warn("Unhandled Rejection: " + (reason ? (reason.message || String(reason)) : "Unknown"));
+      });
+
+      window.addEventListener('error', function(event) {
+        event.preventDefault();
+        console.warn("Uncaught Error: " + (event.error ? (event.error.message || String(event.error)) : event.message));
+      });
+    })();
+  </script>
+  
+  <!-- Premium Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --brand-blue: #4D96FF;
+      --brand-mint: #6BCB77;
+      --brand-bg: #F8F9FD;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--brand-bg);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+    }
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .rec-pulse {
+      animation: pulseRing 1.5s infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+  </style>
+
+  <!-- Firebase Web SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc, getDocs, query, where, orderBy, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYOJZNuB72oFPskOunQa0V98eaXFuyfiw",
+      authDomain: "point-junior-speaking.firebaseapp.com",
+      projectId: "point-junior-speaking",
+      storageBucket: "point-junior-speaking.firebasestorage.app",
+      messagingSenderId: "155258649103",
+      appId: "1:155258649103:web:3eb93c3a79c078acd7817a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    window._fb = { auth, storage, db, ref, uploadBytesResumable, getDownloadURL, collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc, getDocs, query, where, orderBy, limit, deleteDoc };
+
+    signInAnonymously(auth)
+      .then(() => {
+        console.log("Firebase Anonymous Auth Connected ✔️");
+        window._firebaseReady = true;
+        if (window.onFirebaseReady) window.onFirebaseReady();
+      })
+      .catch((err) => {
+        console.warn("Firebase Auth fallback:", err);
+        window._firebaseReady = true;
+        if (window.onFirebaseReady) window.onFirebaseReady();
+      });
+  </script>
+</head>
+<body class="text-slate-800 leading-snug">
+
+  <!-- ==================== MAIN WRAPPER ==================== -->
+  <div class="min-h-screen flex flex-col justify-between max-w-xl mx-auto bg-white shadow-xl shadow-slate-100/50 relative border-x border-slate-100/60">
+    
+    <!-- Kakao in-app browser alert banner -->
+    <div id="kkBanner" class="hidden bg-amber-100/95 text-amber-900 border-b border-amber-200 px-4 py-2.5 sticky top-0 z-[100] text-xs font-bold flex items-center justify-between gap-2">
+      <div class="flex flex-col">
+        <span>📱 카카오톡 브라우저에서는 마이크 녹음이 원활하지 않을 수 있습니다.</span>
+        <span class="text-[10px] text-amber-700">우측 상단 메뉴(⋮)에서 [다른 브라우저로 열기]를 권장합니다.</span>
+      </div>
+      <button onclick="openExternalBrowser()" class="bg-amber-900 text-amber-100 text-[10px] font-black px-2.5 py-1.5 rounded-lg shrink-0">외부 브라우저</button>
+    </div>
+
+    <!-- Active interactive toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 scale-90 opacity-0 pointer-events-none bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-xl shadow-slate-900/20 z-[999] flex items-center gap-2 transition-all duration-300">
+      <span id="toastText">알림 메시지</span>
+    </div>
+
+    <!-- 1. Header -->
+    <header class="bg-[#4D96FF] border-b border-blue-400/30 sticky top-0 z-40 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl overflow-hidden bg-white/95 border border-white/30 p-1 flex items-center justify-center shadow-inner shrink-0 animate-float">
+          <img class="w-full h-full object-contain rounded-lg" src="/src/assets/images/logo.png" alt="Point Academy Logo" referrerPolicy="no-referrer" />
+        </div>
+        <div class="text-left">
+          <h1 class="text-xs sm:text-sm font-black text-white tracking-tight leading-none flex items-center gap-1">
+            Point Junior <span class="text-[#E0F2FE]">Speaking</span>
+          </h1>
+          <span class="text-[9px] text-blue-100 font-extrabold tracking-widest uppercase">Recording & Submission Hub</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="/admin.html" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-extrabold text-[10px] sm:text-xs flex items-center gap-1 transition-all">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+          <span>선생님 관리용</span>
+        </a>
+        <div id="hUserBadges" class="hidden flex-col items-end">
+          <span id="hName" class="text-xs font-extrabold text-white">학생</span>
+          <span id="hClass" class="text-[9px] font-black text-blue-100 bg-white/10 border border-white/20 px-1.5 py-0.2 rounded-md mt-0.5">반</span>
+        </div>
+        <button id="btnLogout" onclick="logout()" class="hidden p-2 rounded-xl text-blue-100 hover:text-white hover:bg-white/10 cursor-pointer transition-all" title="로그아웃">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. Main Content Area -->
+    <main class="flex-1 w-full px-4 py-5 flex flex-col justify-start">
+
+      <!-- ========================================== -->
+      <!-- VIEW 1: LOGIN SCREEN                       -->
+      <!-- ========================================== -->
+      <div id="viewLogin" class="w-full flex flex-col items-center justify-center py-6">
+        <div class="w-full max-w-sm bg-white border border-slate-100 p-6 sm:p-8 rounded-[32px] shadow-sm flex flex-col relative overflow-hidden text-center">
+          <div class="w-24 h-24 mx-auto mb-4 p-1.5 bg-slate-50 border border-slate-100 rounded-3xl overflow-hidden flex items-center justify-center shadow-xs animate-float">
+            <img class="w-full h-full object-contain rounded-2xl" src="/src/assets/images/logo.png" alt="Point Academy Logo" referrerPolicy="no-referrer" />
+          </div>
+          
+          <h2 class="text-xl font-black text-slate-800 tracking-tight">Point Junior Speaking</h2>
+          <p class="text-xs text-slate-400 font-bold mt-1 mb-6">
+            숙제 및 Monthly Test 제출을 위해 로그인해 주세요
+          </p>
+
+          <div class="space-y-4 text-left">
+            <!-- Student Name Input (Direct typing) -->
+            <div class="space-y-1">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">학생 이름 (직접 입력)</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">👤</span>
+                <input id="inpLoginName" type="text" placeholder="학생 이름을 직접 입력하세요 (예: 김태연)"
+                  autocomplete="off"
+                  class="w-full border-2 border-slate-100 rounded-2xl py-3 pl-10 pr-4 text-xs font-black text-slate-700 placeholder-slate-300 focus:outline-none focus:border-blue-400 bg-slate-50/40"
+                  onkeydown="if(event.key==='Enter')document.getElementById('inpLoginPw').focus()" />
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="space-y-1">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">비밀번호 (숫자 4자리)</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
+                <input id="inpLoginPw" type="password" placeholder="숫자 4자리" maxlength="4"
+                  class="w-full border-2 border-slate-100 rounded-2xl py-3 pl-10 pr-4 text-xs font-black text-slate-700 placeholder-slate-300 focus:outline-none focus:border-blue-400 bg-slate-50/40"
+                  onkeydown="if(event.key==='Enter')handleLogin()" />
+              </div>
+            </div>
+
+            <div id="loginError" class="hidden bg-rose-50 border border-rose-100 text-rose-500 font-black text-[11px] p-3 rounded-2xl text-center">
+              😢 이름 혹은 비밀번호가 일치하지 않습니다.
+            </div>
+
+            <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-xs font-black py-3.5 rounded-2xl shadow-md shadow-blue-100 transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2">
+              <span>로그인 및 시작하기</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-[10px] text-slate-400 font-extrabold">
+            <span>Point Academy Speaking Studio © 2026</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW 2: LOGGED IN MAIN INTERFACE           -->
+      <!-- ========================================== -->
+      <div id="viewMain" class="hidden w-full space-y-5">
+        
+        <!-- Top Tab Switcher (숙제 vs Monthly Test) -->
+        <div class="bg-slate-100 p-1.5 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50">
+          <button id="tabBtnHw" onclick="switchTab('homework')" class="flex-1 py-3 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 bg-white text-blue-600 shadow-sm cursor-pointer">
+            <i data-lucide="file-audio" class="w-4 h-4 text-blue-500"></i>
+            <span>📝 숙제 제출</span>
+          </button>
+          <button id="tabBtnMTest" onclick="switchTab('monthly')" class="flex-1 py-3 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 text-slate-500 hover:text-slate-800 cursor-pointer">
+            <i data-lucide="award" class="w-4 h-4 text-indigo-500"></i>
+            <span>📊 Monthly Test (1~20번)</span>
+          </button>
+        </div>
+
+
+        <!-- ------------------------------------------ -->
+        <!-- SECTION 1: HOMEWORK (숙제 칸)             -->
+        <!-- ------------------------------------------ -->
+        <div id="sectionHomework" class="space-y-4 text-left">
+          
+          <!-- Date Selection Card -->
+          <div class="bg-white border border-slate-100 rounded-3xl p-4.5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-black uppercase text-blue-500 tracking-wider flex items-center gap-1.5">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                숙제 제출 날짜 선택
+              </span>
+              <span id="hwDisplayDateText" class="text-xs font-black text-slate-700 bg-blue-50/70 border border-blue-100 px-2.5 py-1 rounded-xl">
+                2026-08-17
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input id="hwDateInput" type="date" class="flex-1 border-2 border-slate-100 rounded-2xl py-2.5 px-3.5 text-xs font-black text-slate-700 bg-slate-50/50 focus:outline-none focus:border-blue-400" onchange="onHwDateChanged()" />
+              <button onclick="setHwToday()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-black px-3 py-2.5 rounded-xl transition-all cursor-pointer shrink-0">
+                오늘
+              </button>
+            </div>
+          </div>
+
+          <!-- Recording & Verification & Submission Workspace Card -->
+          <div class="bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm space-y-5 text-center relative overflow-hidden">
+            
+            <div class="space-y-1">
+              <h3 class="text-base font-black text-slate-800 tracking-tight" id="hwStatusTitle">
+                🎙️ 오늘 숙제 음성 녹음하기
+              </h3>
+              <p class="text-xs text-slate-400 font-bold" id="hwStatusSubtitle">
+                마이크 버튼을 눌러 스피킹 숙제를 또렷하게 녹음해 주세요.
+              </p>
+            </div>
+
+            <!-- Visual Recording State Circle -->
+            <div class="py-2 flex flex-col items-center justify-center">
+              
+              <!-- Idle / Ready or Recording button -->
+              <div class="relative flex items-center justify-center">
+                <div id="hwRecPulseRing" class="hidden absolute inset-0 rounded-full bg-rose-500/20 scale-125 rec-pulse"></div>
+                <button id="btnHwRecord" onclick="toggleHwRecord()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 text-white flex items-center justify-center shadow-lg shadow-rose-200 cursor-pointer active:scale-95 transition-all z-10">
+                  <i id="hwRecIcon" data-lucide="mic" class="w-8 h-8"></i>
+                </button>
+              </div>
+
+              <!-- Timer -->
+              <div class="mt-3 flex items-center gap-2">
+                <span id="hwRecTimer" class="text-sm font-black text-slate-600 bg-slate-50 border border-slate-100 px-3 py-1 rounded-full">
+                  00:00
+                </span>
+                <span id="hwRecStatusLabel" class="text-[11px] font-extrabold text-slate-400">
+                  대기 중
+                </span>
+              </div>
+            </div>
+
+            <!-- Audio Verification (녹음 확인 기능) -->
+            <div id="hwPlaybackArea" class="hidden bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-3 text-left">
+              <div class="flex items-center justify-between text-xs font-black text-slate-700">
+                <span class="flex items-center gap-1.5 text-blue-600">
+                  <i data-lucide="headphones" class="w-4 h-4"></i>
+                  녹음 확인 (다시 듣기)
+                </span>
+                <button onclick="discardHwRecording()" class="text-[11px] text-rose-500 hover:underline flex items-center gap-1 cursor-pointer">
+                  <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                  다시 녹음
+                </button>
+              </div>
+
+              <!-- HTML5 Audio Element -->
+              <audio id="hwAudioPlayer" controls class="w-full rounded-lg" style="height: 38px;"></audio>
+            </div>
+
+            <!-- Upload Progress Bar -->
+            <div id="hwUploadProgressBar" class="hidden space-y-1 text-left">
+              <div class="flex justify-between items-center text-[10px] font-black text-blue-600">
+                <span>전송 중... 🚀</span>
+                <span id="hwUploadPct">0%</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                <div id="hwUploadFill" class="h-full bg-blue-500 rounded-full transition-all duration-200" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Submission Trigger Button (녹음 전송 기능) -->
+            <button id="btnHwSubmit" onclick="submitHwRecording()" disabled class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black py-4 rounded-2xl shadow-md shadow-blue-100 transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>🚀 녹음 파일 전송하기 (숙제 제출)</span>
+            </button>
+          </div>
+
+          <!-- Previously Submitted Recordings for Selected Date -->
+          <div class="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-50 pb-2">
+              <h4 class="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>
+                <span id="hwSubmissionsHeader">해당 날짜 제출 내역</span>
+              </h4>
+              <span id="hwSubmissionsCount" class="text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-0.5 rounded-full">0건</span>
+            </div>
+
+            <div id="hwSubmissionsList" class="space-y-2.5">
+              <p class="text-xs text-slate-400 font-bold py-4 text-center">
+                해당 날짜에 제출된 숙제 녹음이 없습니다.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- ------------------------------------------ -->
+        <!-- SECTION 2: MONTHLY TEST (1~20번 문제)     -->
+        <!-- ------------------------------------------ -->
+        <div id="sectionMonthly" class="hidden space-y-4 text-left">
+          
+          <!-- Month Selection Card -->
+          <div class="bg-white border border-slate-100 rounded-3xl p-4.5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-black uppercase text-indigo-600 tracking-wider flex items-center gap-1.5">
+                <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                Monthly Test 시험 월 선택
+              </span>
+              <span id="mTestDisplayMonthText" class="text-xs font-black text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-xl">
+                2026-08
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input id="mTestMonthInput" type="month" class="flex-1 border-2 border-slate-100 rounded-2xl py-2.5 px-3.5 text-xs font-black text-slate-700 bg-slate-50/50 focus:outline-none focus:border-indigo-400" onchange="onMTestMonthChanged()" />
+              <button onclick="setMTestCurrentMonth()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-black px-3.5 py-2.5 rounded-xl transition-all cursor-pointer shrink-0">
+                이번 달
+              </button>
+            </div>
+
+            <!-- Total Test Progress summary -->
+            <div class="pt-2 border-t border-slate-50 space-y-1.5">
+              <div class="flex justify-between items-center text-[11px] font-black text-slate-500">
+                <span>시험 총 제출 완료 현황</span>
+                <span id="mTestTotalProgressText" class="text-indigo-600">0 / 20 완료 (0%)</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div id="mTestTotalProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full transition-all duration-300" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question Selector Bar (1번 ~ 20번 문제) -->
+          <div class="bg-white border border-slate-100 rounded-3xl p-4 shadow-sm space-y-2">
+            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 ml-1">
+              문제 번호 선택 (1번 ~ 20번)
+            </span>
+            
+            <div class="grid grid-cols-5 xs:grid-cols-10 gap-1.5 sm:gap-2" id="mTestQuestionsGrid">
+              <!-- 1 to 20 chips generated dynamically -->
+            </div>
+          </div>
+
+          <!-- Selected Question Recording Workspace Card -->
+          <div class="bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm space-y-5 text-center relative overflow-hidden">
+            
+            <!-- Question header & navigation -->
+            <div class="flex items-center justify-between border-b border-slate-50 pb-3">
+              <button onclick="prevMTestQuestion()" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-black flex items-center gap-1 cursor-pointer transition-all">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                <span class="hidden xs:inline">이전</span>
+              </button>
+              
+              <div class="text-center">
+                <span id="mTestQBadge" class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs font-black px-3.5 py-1 rounded-full">
+                  문제 1번
+                </span>
+                <p id="mTestQStatusSubtitle" class="text-[11px] text-slate-400 font-bold mt-1">
+                  1번 문제의 음성을 녹음해 주세요.
+                </p>
+              </div>
+
+              <button onclick="nextMTestQuestion()" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-black flex items-center gap-1 cursor-pointer transition-all">
+                <span class="hidden xs:inline">다음</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Voice Recording Trigger Button -->
+            <div class="py-2 flex flex-col items-center justify-center">
+              <div class="relative flex items-center justify-center">
+                <div id="mTestRecPulseRing" class="hidden absolute inset-0 rounded-full bg-rose-500/20 scale-125 rec-pulse"></div>
+                <button id="btnMTestRecord" onclick="toggleMTestRecord()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 text-white flex items-center justify-center shadow-lg shadow-rose-200 cursor-pointer active:scale-95 transition-all z-10">
+                  <i id="mTestRecIcon" data-lucide="mic" class="w-8 h-8"></i>
+                </button>
+              </div>
+
+              <!-- Timer -->
+              <div class="mt-3 flex items-center gap-2">
+                <span id="mTestRecTimer" class="text-sm font-black text-slate-600 bg-slate-50 border border-slate-100 px-3 py-1 rounded-full">
+                  00:00
+                </span>
+                <span id="mTestRecStatusLabel" class="text-[11px] font-extrabold text-slate-400">
+                  대기 중
+                </span>
+              </div>
+            </div>
+
+            <!-- Audio Verification for Selected Question (녹음 확인) -->
+            <div id="mTestPlaybackArea" class="hidden bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-3 text-left">
+              <div class="flex items-center justify-between text-xs font-black text-slate-700">
+                <span class="flex items-center gap-1.5 text-indigo-600">
+                  <i data-lucide="headphones" class="w-4 h-4"></i>
+                  <span id="mTestPlaybackTitle">문제 1번 녹음 확인</span>
+                </span>
+                <button onclick="discardMTestRecording()" class="text-[11px] text-rose-500 hover:underline flex items-center gap-1 cursor-pointer">
+                  <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                  다시 녹음
+                </button>
+              </div>
+
+              <audio id="mTestAudioPlayer" controls class="w-full rounded-lg" style="height: 38px;"></audio>
+            </div>
+
+            <!-- Already submitted info (if submitted from cloud) -->
+            <div id="mTestCloudSubmittedBox" class="hidden bg-emerald-50 border border-emerald-100 rounded-2xl p-4 space-y-2 text-left">
+              <div class="flex items-center justify-between text-xs font-black text-emerald-800">
+                <span class="flex items-center gap-1.5">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                  <span>이 문제는 이미 제출 완료되었습니다</span>
+                </span>
+                <span id="mTestCloudSubmittedTime" class="text-[10px] text-emerald-600 font-bold"></span>
+              </div>
+              <audio id="mTestCloudAudioPlayer" controls class="w-full rounded-lg" style="height: 36px;"></audio>
+            </div>
+
+            <!-- Progress bar -->
+            <div id="mTestUploadProgressBar" class="hidden space-y-1 text-left">
+              <div class="flex justify-between items-center text-[10px] font-black text-indigo-600">
+                <span>전송 중... 🚀</span>
+                <span id="mTestUploadPct">0%</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                <div id="mTestUploadFill" class="h-full bg-indigo-600 rounded-full transition-all duration-200" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Submit button for current question -->
+            <button id="btnMTestSubmit" onclick="submitMTestRecording()" disabled class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black py-4 rounded-2xl shadow-md shadow-indigo-150 transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span id="btnMTestSubmitText">🚀 문제 1번 녹음 전송하기</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 border-t border-slate-100 text-center text-[10px] font-bold text-slate-300">
+      Point Junior Speaking Studio • Student Portal
+    </footer>
+
+  </div>
+
+  <!-- ==================== APPLICATION SCRIPTS ==================== -->
+  <script>
+    // ── Application State ──
+    let currentUser = null;
+    let activeTab = 'homework'; // 'homework' | 'monthly'
+
+    // Students database (built-in fallback)
+    const STUDENTS_DB = [
+      { name: "포인트", pw: "2384", cls: "관리자" },
+      { name: "김태연", pw: "2847", cls: "E.S.1반" },
+      { name: "박주성", pw: "5193", cls: "E.S.1반" },
+      { name: "정진호", pw: "7362", cls: "E.S.1반" },
+      { name: "한바로", pw: "4815", cls: "E.S.1반" },
+      { name: "안서윤", pw: "9274", cls: "E.S.1반" },
+      { name: "강민서", pw: "6531", cls: "E.S.1반" },
+      { name: "김지안", pw: "3726", cls: "E.S.2반" },
+      { name: "백지선", pw: "8149", cls: "E.S.2반" },
+      { name: "김승아", pw: "5083", cls: "E.S.2반" },
+      { name: "정선우", pw: "7418", cls: "E.S.3반" },
+      { name: "강준서", pw: "2963", cls: "P-E.S반" }
+    ];
+
+    // ── Homework Variables ──
+    let selectedHwDate = getTodayFormatted();
+    let hwMediaRecorder = null;
+    let hwAudioChunks = [];
+    let hwRecordedBlob = null;
+    let hwRecordTimerInterval = null;
+    let hwRecordSeconds = 0;
+    let hwSubmissionsList = [];
+
+    // ── Monthly Test Variables ──
+    let selectedMTestMonth = getCurrentMonthFormatted();
+    let currentMTestQ = 1; // 1 ~ 20
+    let mTestMediaRecorder = null;
+    let mTestAudioChunks = [];
+    let mTestLocalBlobs = {}; // { 1: Blob, 2: Blob, ... }
+    let mTestCloudSubmissions = {}; // { 1: { fileUrl, submittedAt, ... }, ... }
+    let mTestRecordTimerInterval = null;
+    let mTestRecordSeconds = 0;
+
+    // Toast helper
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      const text = document.getElementById('toastText');
+      if (!t || !text) return;
+      text.textContent = msg;
+      t.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+      t.classList.add('opacity-100', 'scale-100');
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => {
+        t.classList.remove('opacity-100', 'scale-100');
+        t.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+      }, 3000);
+    }
+
+    function getTodayFormatted() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function getCurrentMonthFormatted() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    }
+
+    function openExternalBrowser() {
+      const url = window.location.href;
+      window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+    }
+
+    // Initialize UI on load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check kakao in-app
+      const ua = navigator.userAgent.toLowerCase();
+      if (ua.includes('kakaotalk')) {
+        document.getElementById('kkBanner').classList.remove('hidden');
+      }
+
+      // Check localStorage for saved session
+      const savedUser = localStorage.getItem('point_junior_user');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          showMainInterface();
+        } catch (e) {
+          localStorage.removeItem('point_junior_user');
+        }
+      }
+
+      // Set initial dates
+      setHwToday();
+      setMTestCurrentMonth();
+      renderMTestQuestionsGrid();
+      lucide.createIcons();
+    });
+
+    // ----------------------------------------------------
+    // AUTHENTICATION LOGIC
+    // ----------------------------------------------------
+    function handleLogin() {
+      const nameInput = document.getElementById('inpLoginName').value.trim();
+      const pwInput = document.getElementById('inpLoginPw').value.trim();
+      const errBox = document.getElementById('loginError');
+
+      if (!nameInput) {
+        toast('학생 이름을 입력해 주세요.');
+        return;
+      }
+
+      // Find in DB
+      let matched = STUDENTS_DB.find(s => s.name === nameInput && s.pw === pwInput);
+      
+      // Fallback: If not in DB, allow any name with 4 digits PIN for flexibility
+      if (!matched && pwInput.length === 4) {
+        matched = { name: nameInput, pw: pwInput, cls: "일반반" };
+      }
+
+      if (matched) {
+        currentUser = matched;
+        localStorage.setItem('point_junior_user', JSON.stringify(currentUser));
+        errBox.classList.add('hidden');
+        showMainInterface();
+        toast(`반갑습니다, ${currentUser.name} 학생! 👋`);
+      } else {
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('point_junior_user');
+      document.getElementById('viewMain').classList.add('hidden');
+      document.getElementById('viewLogin').classList.remove('hidden');
+      document.getElementById('hUserBadges').classList.add('hidden');
+      document.getElementById('btnLogout').classList.add('hidden');
+      document.getElementById('inpLoginPw').value = '';
+    }
+
+    function showMainInterface() {
+      document.getElementById('viewLogin').classList.add('hidden');
+      document.getElementById('viewMain').classList.remove('hidden');
+      document.getElementById('hUserBadges').classList.remove('hidden');
+      document.getElementById('hUserBadges').classList.add('flex');
+      document.getElementById('btnLogout').classList.remove('hidden');
+      
+      document.getElementById('hName').textContent = `${currentUser.name} 학생`;
+      document.getElementById('hClass').textContent = currentUser.cls || '학생';
+
+      // Load initial data
+      loadHwSubmissions();
+      loadMTestSubmissions();
+      lucide.createIcons();
+    }
+
+    // ----------------------------------------------------
+    // TAB SWITCHING
+    // ----------------------------------------------------
+    function switchTab(tab) {
+      activeTab = tab;
+      const btnHw = document.getElementById('tabBtnHw');
+      const btnMTest = document.getElementById('tabBtnMTest');
+      const secHw = document.getElementById('sectionHomework');
+      const secMTest = document.getElementById('sectionMonthly');
+
+      if (tab === 'homework') {
+        btnHw.className = "flex-1 py-3 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 bg-white text-blue-600 shadow-sm cursor-pointer";
+        btnMTest.className = "flex-1 py-3 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 text-slate-500 hover:text-slate-800 cursor-pointer";
+        secHw.classList.remove('hidden');
+        secMTest.classList.add('hidden');
+        loadHwSubmissions();
+      } else {
+        btnMTest.className = "flex-1 py-3 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 bg-white text-indigo-600 shadow-sm cursor-pointer";
+        btnHw.className = "flex-1 py-3 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 text-slate-500 hover:text-slate-800 cursor-pointer";
+        secMTest.classList.remove('hidden');
+        secHw.classList.add('hidden');
+        loadMTestSubmissions();
+      }
+      lucide.createIcons();
+    }
+
+    // ----------------------------------------------------
+    // HOMEWORK TAB LOGIC
+    // ----------------------------------------------------
+    function setHwToday() {
+      selectedHwDate = getTodayFormatted();
+      document.getElementById('hwDateInput').value = selectedHwDate;
+      document.getElementById('hwDisplayDateText').textContent = selectedHwDate;
+      loadHwSubmissions();
+    }
+
+    function onHwDateChanged() {
+      const val = document.getElementById('hwDateInput').value;
+      if (val) {
+        selectedHwDate = val;
+        document.getElementById('hwDisplayDateText').textContent = selectedHwDate;
+        loadHwSubmissions();
+      }
+    }
+
+    async function toggleHwRecord() {
+      if (hwMediaRecorder && hwMediaRecorder.state === 'recording') {
+        // Stop recording
+        hwMediaRecorder.stop();
+      } else {
+        // Start recording
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          hwAudioChunks = [];
+          
+          let mimeType = 'audio/webm';
+          if (!MediaRecorder.isTypeSupported('audio/webm')) {
+            if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+            else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
+          }
+
+          hwMediaRecorder = new MediaRecorder(stream, { mimeType });
+          
+          hwMediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) hwAudioChunks.push(e.data);
+          };
+
+          hwMediaRecorder.onstop = () => {
+            clearInterval(hwRecordTimerInterval);
+            hwRecordedBlob = new Blob(hwAudioChunks, { type: hwMediaRecorder.mimeType || 'audio/webm' });
+            
+            // Set playback
+            const player = document.getElementById('hwAudioPlayer');
+            player.src = URL.createObjectURL(hwRecordedBlob);
+            document.getElementById('hwPlaybackArea').classList.remove('hidden');
+            
+            // Update UI
+            document.getElementById('hwRecPulseRing').classList.add('hidden');
+            document.getElementById('btnHwRecord').classList.remove('from-amber-500', 'to-orange-500');
+            document.getElementById('btnHwRecord').classList.add('from-rose-500', 'to-red-500');
+            document.getElementById('hwRecIcon').setAttribute('data-lucide', 'mic');
+            document.getElementById('hwRecStatusLabel').textContent = "녹음 완료! 확인 후 전송해 주세요.";
+            document.getElementById('btnHwSubmit').disabled = false;
+            
+            // Stop tracks to release mic
+            stream.getTracks().forEach(track => track.stop());
+            lucide.createIcons();
+            toast('✅ 녹음 완료! 아래에서 확인 후 전송하세요.');
+          };
+
+          hwMediaRecorder.start(100);
+          hwRecordSeconds = 0;
+          document.getElementById('hwRecTimer').textContent = "00:00";
+          document.getElementById('hwRecStatusLabel').textContent = "🔴 녹음 중... (마이크를 탭하여 정지)";
+          document.getElementById('hwRecPulseRing').classList.remove('hidden');
+          document.getElementById('btnHwRecord').classList.remove('from-rose-500', 'to-red-500');
+          document.getElementById('btnHwRecord').classList.add('from-amber-500', 'to-orange-500');
+          document.getElementById('hwRecIcon').setAttribute('data-lucide', 'square');
+          document.getElementById('btnHwSubmit').disabled = true;
+          document.getElementById('hwPlaybackArea').classList.add('hidden');
+          lucide.createIcons();
+
+          hwRecordTimerInterval = setInterval(() => {
+            hwRecordSeconds++;
+            const m = String(Math.floor(hwRecordSeconds / 60)).padStart(2, '0');
+            const s = String(hwRecordSeconds % 60).padStart(2, '0');
+            document.getElementById('hwRecTimer').textContent = `${m}:${s}`;
+          }, 1000);
+
+        } catch (err) {
+          console.error("Microphone access failed:", err);
+          toast('⚠️ 마이크 사용 권한을 허용해 주세요.');
+        }
+      }
+    }
+
+    function discardHwRecording() {
+      hwRecordedBlob = null;
+      document.getElementById('hwPlaybackArea').classList.add('hidden');
+      document.getElementById('btnHwSubmit').disabled = true;
+      document.getElementById('hwRecTimer').textContent = "00:00";
+      document.getElementById('hwRecStatusLabel').textContent = "대기 중";
+      const player = document.getElementById('hwAudioPlayer');
+      player.pause();
+      player.src = "";
+      toast('녹음이 취소되었습니다.');
+    }
+
+    async function submitHwRecording() {
+      if (!hwRecordedBlob) {
+        toast('먼저 숙제를 녹음해 주세요.');
+        return;
+      }
+      if (!currentUser) {
+        toast('로그인이 필요합니다.');
+        return;
+      }
+
+      const fb = window._fb;
+      if (!fb) {
+        toast('데이터베이스 통신 연결 중입니다. 잠시 후 다시 시도해 주세요.');
+        return;
+      }
+
+      const btnSubmit = document.getElementById('btnHwSubmit');
+      btnSubmit.disabled = true;
+
+      const pBar = document.getElementById('hwUploadProgressBar');
+      const pFill = document.getElementById('hwUploadFill');
+      const pPct = document.getElementById('hwUploadPct');
+      pBar.classList.remove('hidden');
+
+      const safeName = currentUser.name.replace(/[\s/]/g, '_');
+      const dateStr = selectedHwDate;
+      const timestamp = Date.now();
+      const ext = hwRecordedBlob.type.includes('mp4') ? 'mp4' : hwRecordedBlob.type.includes('ogg') ? 'ogg' : 'webm';
+      const fileName = `${safeName}_숙제_${dateStr}_${timestamp}.${ext}`;
+      const pathTarget = `recordings/${safeName}/homework/${dateStr}/${fileName}`;
+
+      try {
+        const storageRef = fb.ref(fb.storage, pathTarget);
+        const uploadTask = fb.uploadBytesResumable(storageRef, hwRecordedBlob);
+
+        uploadTask.on('state_changed', 
+          (snap) => {
+            const total = snap.totalBytes || 1;
+            const pct = Math.round((snap.bytesTransferred / total) * 100);
+            pFill.style.width = pct + '%';
+            pPct.textContent = pct + '%';
+          },
+          (err) => {
+            console.error("Storage upload error:", err);
+            toast('전송 중 네트워크 오류가 발생했습니다.');
+            pBar.classList.add('hidden');
+            btnSubmit.disabled = false;
+          },
+          async () => {
+            try {
+              const downloadUrl = await fb.getDownloadURL(uploadTask.snapshot.ref);
+              pBar.classList.add('hidden');
+
+              // Save to Firestore `submissions`
+              await fb.addDoc(fb.collection(fb.db, 'submissions'), {
+                type: 'homework',
+                studentName: currentUser.name,
+                studentClass: currentUser.cls || '학생',
+                date: dateStr,
+                unitName: `${dateStr} 숙제`,
+                fileName: fileName,
+                fileUrl: downloadUrl,
+                durationSeconds: hwRecordSeconds,
+                submittedAt: fb.serverTimestamp()
+              });
+
+              toast('🎉 숙제 녹음이 성공적으로 제출되었습니다!');
+              discardHwRecording();
+              loadHwSubmissions();
+            } catch (fsErr) {
+              console.error("Firestore submission save error:", fsErr);
+              toast('숙제 파일이 전송되었으나 기록 저장 중 문제가 발생했습니다.');
+            }
+          }
+        );
+      } catch (e) {
+        console.error("Upload preparation error:", e);
+        toast('전송 오류가 발생했습니다.');
+        pBar.classList.add('hidden');
+        btnSubmit.disabled = false;
+      }
+    }
+
+    async function loadHwSubmissions() {
+      if (!currentUser) return;
+      const fb = window._fb;
+      const listEl = document.getElementById('hwSubmissionsList');
+      const countEl = document.getElementById('hwSubmissionsCount');
+      const headerEl = document.getElementById('hwSubmissionsHeader');
+
+      headerEl.textContent = `📅 [${selectedHwDate}] 제출된 숙제 내역`;
+
+      if (!fb) {
+        listEl.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">데이터 로딩 중...</p>`;
+        return;
+      }
+
+      try {
+        const q = fb.query(
+          fb.collection(fb.db, 'submissions'),
+          fb.where('studentName', '==', currentUser.name)
+        );
+
+        const snap = await fb.getDocs(q);
+        const docs = [];
+        snap.forEach(d => {
+          const data = d.data();
+          // Filter by selected date
+          if (data.date === selectedHwDate || (data.unitName && data.unitName.includes(selectedHwDate))) {
+            docs.push({ id: d.id, ...data });
+          }
+        });
+
+        countEl.textContent = `${docs.length}건`;
+
+        if (docs.length === 0) {
+          listEl.innerHTML = `
+            <div class="py-6 text-center text-slate-400 space-y-1">
+              <span class="text-2xl">📭</span>
+              <p class="text-xs font-bold">${selectedHwDate}에 제출된 녹음 파일이 없습니다.</p>
+              <p class="text-[10px]">위 마이크 버튼을 눌러 첫 녹음을 제출해 보세요!</p>
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        docs.forEach((item, idx) => {
+          const timeStr = item.submittedAt && item.submittedAt.toDate ? item.submittedAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '방금 전';
+          html += `
+            <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl space-y-2 text-left">
+              <div class="flex items-center justify-between text-xs font-black">
+                <span class="text-slate-800 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  제출본 #${idx + 1} (${item.fileName || '녹음파일'})
+                </span>
+                <span class="text-[10px] text-slate-400 font-bold">${timeStr}</span>
+              </div>
+              <audio controls src="${item.fileUrl}" class="w-full rounded-lg" style="height: 34px;"></audio>
+            </div>
+          `;
+        });
+
+        listEl.innerHTML = html;
+      } catch (err) {
+        console.error("Error loading submissions:", err);
+      }
+    }
+
+
+    // ----------------------------------------------------
+    // MONTHLY TEST TAB LOGIC (Questions 1 ~ 20)
+    // ----------------------------------------------------
+    function setMTestCurrentMonth() {
+      selectedMTestMonth = getCurrentMonthFormatted();
+      document.getElementById('mTestMonthInput').value = selectedMTestMonth;
+      document.getElementById('mTestDisplayMonthText').textContent = selectedMTestMonth;
+      loadMTestSubmissions();
+    }
+
+    function onMTestMonthChanged() {
+      const val = document.getElementById('mTestMonthInput').value;
+      if (val) {
+        selectedMTestMonth = val;
+        document.getElementById('mTestDisplayMonthText').textContent = selectedMTestMonth;
+        loadMTestSubmissions();
+      }
+    }
+
+    function renderMTestQuestionsGrid() {
+      const grid = document.getElementById('mTestQuestionsGrid');
+      let html = '';
+      for (let i = 1; i <= 20; i++) {
+        const isCurrent = (i === currentMTestQ);
+        const hasLocal = !!mTestLocalBlobs[i];
+        const isCloudSubmitted = !!mTestCloudSubmissions[i];
+
+        let bgClass = "bg-slate-50 text-slate-600 border-slate-100";
+        let statusDot = "";
+
+        if (isCloudSubmitted) {
+          bgClass = isCurrent ? "bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-300" : "bg-emerald-50 text-emerald-800 border-emerald-200 font-black";
+          statusDot = `<span class="w-1.5 h-1.5 rounded-full ${isCurrent ? 'bg-white' : 'bg-emerald-500'}"></span>`;
+        } else if (hasLocal) {
+          bgClass = isCurrent ? "bg-amber-500 text-white border-amber-500 shadow-md ring-2 ring-amber-300" : "bg-amber-50 text-amber-800 border-amber-200 font-black";
+          statusDot = `<span class="w-1.5 h-1.5 rounded-full ${isCurrent ? 'bg-white' : 'bg-amber-500'}"></span>`;
+        } else if (isCurrent) {
+          bgClass = "bg-indigo-600 text-white border-indigo-600 shadow-md ring-2 ring-indigo-300";
+        }
+
+        html += `
+          <button onclick="selectMTestQuestion(${i})" class="p-2 sm:py-2.5 rounded-xl border text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer active:scale-95 ${bgClass}">
+            <span>Q${i}</span>
+            ${statusDot}
+          </button>
+        `;
+      }
+      grid.innerHTML = html;
+      updateMTestTotalProgress();
+    }
+
+    function selectMTestQuestion(qNum) {
+      if (mTestMediaRecorder && mTestMediaRecorder.state === 'recording') {
+        toast('녹음 중에는 문제를 변경할 수 없습니다. 먼저 녹음을 정지해 주세요.');
+        return;
+      }
+      currentMTestQ = qNum;
+      document.getElementById('mTestQBadge').textContent = `문제 ${qNum}번`;
+      document.getElementById('btnMTestSubmitText').textContent = `🚀 문제 ${qNum}번 녹음 전송하기`;
+      document.getElementById('mTestPlaybackTitle').textContent = `문제 ${qNum}번 녹음 확인`;
+
+      // Reset recording workspace UI
+      document.getElementById('mTestRecTimer').textContent = "00:00";
+      document.getElementById('mTestRecStatusLabel').textContent = "대기 중";
+
+      // Check if local recorded blob exists
+      const localBlob = mTestLocalBlobs[qNum];
+      const player = document.getElementById('mTestAudioPlayer');
+      if (localBlob) {
+        player.src = URL.createObjectURL(localBlob);
+        document.getElementById('mTestPlaybackArea').classList.remove('hidden');
+        document.getElementById('btnMTestSubmit').disabled = false;
+      } else {
+        document.getElementById('mTestPlaybackArea').classList.add('hidden');
+        document.getElementById('btnMTestSubmit').disabled = true;
+        player.src = "";
+      }
+
+      // Check if cloud submitted exists
+      const cloudSub = mTestCloudSubmissions[qNum];
+      const cloudBox = document.getElementById('mTestCloudSubmittedBox');
+      const cloudPlayer = document.getElementById('mTestCloudAudioPlayer');
+      if (cloudSub && cloudSub.fileUrl) {
+        cloudBox.classList.remove('hidden');
+        cloudPlayer.src = cloudSub.fileUrl;
+        const timeStr = cloudSub.submittedAt && cloudSub.submittedAt.toDate ? cloudSub.submittedAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '제출됨';
+        document.getElementById('mTestCloudSubmittedTime').textContent = timeStr;
+      } else {
+        cloudBox.classList.add('hidden');
+        cloudPlayer.src = "";
+      }
+
+      renderMTestQuestionsGrid();
+      lucide.createIcons();
+    }
+
+    function prevMTestQuestion() {
+      if (currentMTestQ > 1) {
+        selectMTestQuestion(currentMTestQ - 1);
+      } else {
+        selectMTestQuestion(20);
+      }
+    }
+
+    function nextMTestQuestion() {
+      if (currentMTestQ < 20) {
+        selectMTestQuestion(currentMTestQ + 1);
+      } else {
+        selectMTestQuestion(1);
+      }
+    }
+
+    async function toggleMTestRecord() {
+      if (mTestMediaRecorder && mTestMediaRecorder.state === 'recording') {
+        mTestMediaRecorder.stop();
+      } else {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mTestAudioChunks = [];
+
+          let mimeType = 'audio/webm';
+          if (!MediaRecorder.isTypeSupported('audio/webm')) {
+            if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+            else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
+          }
+
+          mTestMediaRecorder = new MediaRecorder(stream, { mimeType });
+
+          mTestMediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) mTestAudioChunks.push(e.data);
+          };
+
+          mTestMediaRecorder.onstop = () => {
+            clearInterval(mTestRecordTimerInterval);
+            const recordedBlob = new Blob(mTestAudioChunks, { type: mTestMediaRecorder.mimeType || 'audio/webm' });
+            mTestLocalBlobs[currentMTestQ] = recordedBlob;
+
+            // Set playback
+            const player = document.getElementById('mTestAudioPlayer');
+            player.src = URL.createObjectURL(recordedBlob);
+            document.getElementById('mTestPlaybackArea').classList.remove('hidden');
+
+            // Update UI
+            document.getElementById('mTestRecPulseRing').classList.add('hidden');
+            document.getElementById('btnMTestRecord').classList.remove('from-amber-500', 'to-orange-500');
+            document.getElementById('btnMTestRecord').classList.add('from-rose-500', 'to-red-500');
+            document.getElementById('mTestRecIcon').setAttribute('data-lucide', 'mic');
+            document.getElementById('mTestRecStatusLabel').textContent = "녹음 완료! 확인 후 전송해 주세요.";
+            document.getElementById('btnMTestSubmit').disabled = false;
+
+            stream.getTracks().forEach(track => track.stop());
+            renderMTestQuestionsGrid();
+            lucide.createIcons();
+            toast(`✅ 문제 ${currentMTestQ}번 녹음 완료!`);
+          };
+
+          mTestMediaRecorder.start(100);
+          mTestRecordSeconds = 0;
+          document.getElementById('mTestRecTimer').textContent = "00:00";
+          document.getElementById('mTestRecStatusLabel').textContent = "🔴 녹음 중... (마이크를 탭하여 정지)";
+          document.getElementById('mTestRecPulseRing').classList.remove('hidden');
+          document.getElementById('btnMTestRecord').classList.remove('from-rose-500', 'to-red-500');
+          document.getElementById('btnMTestRecord').classList.add('from-amber-500', 'to-orange-500');
+          document.getElementById('mTestRecIcon').setAttribute('data-lucide', 'square');
+          document.getElementById('btnMTestSubmit').disabled = true;
+          document.getElementById('mTestPlaybackArea').classList.add('hidden');
+          lucide.createIcons();
+
+          mTestRecordTimerInterval = setInterval(() => {
+            mTestRecordSeconds++;
+            const m = String(Math.floor(mTestRecordSeconds / 60)).padStart(2, '0');
+            const s = String(mTestRecordSeconds % 60).padStart(2, '0');
+            document.getElementById('mTestRecTimer').textContent = `${m}:${s}`;
+          }, 1000);
+
+        } catch (err) {
+          console.error("Microphone access failed:", err);
+          toast('⚠️ 마이크 사용 권한을 허용해 주세요.');
+        }
+      }
+    }
+
+    function discardMTestRecording() {
+      delete mTestLocalBlobs[currentMTestQ];
+      document.getElementById('mTestPlaybackArea').classList.add('hidden');
+      document.getElementById('btnMTestSubmit').disabled = true;
+      document.getElementById('mTestRecTimer').textContent = "00:00";
+      document.getElementById('mTestRecStatusLabel').textContent = "대기 중";
+      const player = document.getElementById('mTestAudioPlayer');
+      player.pause();
+      player.src = "";
+      renderMTestQuestionsGrid();
+      toast(`문제 ${currentMTestQ}번 녹음이 취소되었습니다.`);
+    }
+
+    async function submitMTestRecording() {
+      const blob = mTestLocalBlobs[currentMTestQ];
+      if (!blob) {
+        toast(`문제 ${currentMTestQ}번의 녹음 파일이 없습니다.`);
+        return;
+      }
+      if (!currentUser) {
+        toast('로그인이 필요합니다.');
+        return;
+      }
+
+      const fb = window._fb;
+      if (!fb) {
+        toast('데이터베이스 통신 연결 중입니다.');
+        return;
+      }
+
+      const btnSubmit = document.getElementById('btnMTestSubmit');
+      btnSubmit.disabled = true;
+
+      const pBar = document.getElementById('mTestUploadProgressBar');
+      const pFill = document.getElementById('mTestUploadFill');
+      const pPct = document.getElementById('mTestUploadPct');
+      pBar.classList.remove('hidden');
+
+      const safeName = currentUser.name.replace(/[\s/]/g, '_');
+      const monthStr = selectedMTestMonth;
+      const qNum = currentMTestQ;
+      const timestamp = Date.now();
+      const ext = blob.type.includes('mp4') ? 'mp4' : blob.type.includes('ogg') ? 'ogg' : 'webm';
+      const fileName = `${safeName}_Monthly_${monthStr}_Q${qNum}_${timestamp}.${ext}`;
+      const pathTarget = `monthly_tests/${safeName}/${monthStr}/${fileName}`;
+
+      try {
+        const storageRef = fb.ref(fb.storage, pathTarget);
+        const uploadTask = fb.uploadBytesResumable(storageRef, blob);
+
+        uploadTask.on('state_changed',
+          (snap) => {
+            const total = snap.totalBytes || 1;
+            const pct = Math.round((snap.bytesTransferred / total) * 100);
+            pFill.style.width = pct + '%';
+            pPct.textContent = pct + '%';
+          },
+          (err) => {
+            console.error("Monthly test upload error:", err);
+            toast('전송 중 네트워크 오류가 발생했습니다.');
+            pBar.classList.add('hidden');
+            btnSubmit.disabled = false;
+          },
+          async () => {
+            try {
+              const downloadUrl = await fb.getDownloadURL(uploadTask.snapshot.ref);
+              pBar.classList.add('hidden');
+
+              // Save to Firestore `submissions`
+              const docId = `mtest_${safeName}_${monthStr}_q${qNum}`;
+              await fb.setDoc(fb.doc(fb.db, 'submissions', docId), {
+                type: 'monthly_test',
+                studentName: currentUser.name,
+                studentClass: currentUser.cls || '학생',
+                month: monthStr,
+                questionNum: qNum,
+                unitName: `Monthly Test (${monthStr})`,
+                fileName: fileName,
+                fileUrl: downloadUrl,
+                submittedAt: fb.serverTimestamp()
+              });
+
+              toast(`🎉 문제 ${qNum}번 녹음이 제출되었습니다!`);
+              mTestCloudSubmissions[qNum] = {
+                fileUrl: downloadUrl,
+                fileName: fileName,
+                submittedAt: new Date()
+              };
+
+              // Clear local blob
+              delete mTestLocalBlobs[qNum];
+              selectMTestQuestion(qNum);
+
+              // Auto advance to next question if < 20
+              if (qNum < 20) {
+                setTimeout(() => {
+                  selectMTestQuestion(qNum + 1);
+                }, 1000);
+              }
+            } catch (fsErr) {
+              console.error("Firestore save error:", fsErr);
+              toast('파일 업로드는 완료되었으나 상태 저장 중 오류가 발생했습니다.');
+              btnSubmit.disabled = false;
+            }
+          }
+        );
+      } catch (e) {
+        console.error("Upload preparation error:", e);
+        toast('전송 오류가 발생했습니다.');
+        pBar.classList.add('hidden');
+        btnSubmit.disabled = false;
+      }
+    }
+
+    async function loadMTestSubmissions() {
+      if (!currentUser) return;
+      const fb = window._fb;
+      if (!fb) return;
+
+      try {
+        const q = fb.query(
+          fb.collection(fb.db, 'submissions'),
+          fb.where('studentName', '==', currentUser.name),
+          fb.where('type', '==', 'monthly_test')
+        );
+
+        const snap = await fb.getDocs(q);
+        mTestCloudSubmissions = {};
+
+        snap.forEach(d => {
+          const data = d.data();
+          if (data.month === selectedMTestMonth && data.questionNum) {
+            mTestCloudSubmissions[data.questionNum] = data;
+          }
+        });
+
+        renderMTestQuestionsGrid();
+        selectMTestQuestion(currentMTestQ);
+      } catch (err) {
+        console.error("Error loading monthly test submissions:", err);
+      }
+    }
+
+    function updateMTestTotalProgress() {
+      let completedCount = 0;
+      for (let i = 1; i <= 20; i++) {
+        if (mTestCloudSubmissions[i]) completedCount++;
+      }
+      const pct = Math.round((completedCount / 20) * 100);
+      document.getElementById('mTestTotalProgressText').textContent = `${completedCount} / 20 완료 (${pct}%)`;
+      document.getElementById('mTestTotalProgressBar').style.width = `${pct}%`;
+    }
+
+    // Connect callback when firebase is ready
+    window.onFirebaseReady = function() {
+      if (currentUser) {
+        loadHwSubmissions();
+        loadMTestSubmissions();
+      }
+    };
+  </script>
+</body>
+</html>
